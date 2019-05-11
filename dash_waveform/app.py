@@ -1,44 +1,46 @@
 import dash
+import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
 import pandas as pd
 from dash.dependencies import Input, Output
 
-
-app = dash.Dash(__name__)
-app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 
-df = pd.DataFrame({"time": [1, 2, 4], "values": [10, 20, 15]})
-
-app.layout = html.Div(
+row = html.Div(
     [
-        html.Div(
+        dbc.Row(dbc.Col(html.Div("Waveform editor"))),
+        dbc.Row(
             [
-                html.Div(
-                    [
-                        dash_table.DataTable(
-                            id="table-editing-simple",
-                            columns=[{"name": i, "id": i} for i in df.columns],
-                            data=df.to_dict("records"),
-                            editable=True,
-                        )
-                    ],
+                dbc.Col(
+                    html.Div(
+                        [
+                            dash_table.DataTable(
+                                id="table-editing-simple",
+                                columns=[
+                                    {"name": i, "id": i} for i in ["time", "values"]
+                                ],
+                                data=[
+                                    {"time": 1, "values": 10},
+                                    {"time": 2, "values": 20},
+                                    {"time": 4, "values": 15},
+                                ],
+                                editable=True,
+                            )
+                        ]
+                    ),
                     style={"width": "150px"},
-                    className="six columns",
                 ),
-                html.Div(
-                    [dcc.Graph(id="table-editing-simple-output")],
-                    className="six columns",
-                    style={"width": "800px"},
-                ),
-            ],
-            className="row",
-        )
-    ],
-    style={"width": "800px"},
+                dbc.Col(html.Div([dcc.Graph(id="table-editing-simple-output")])),
+            ]
+        ),
+    ]
 )
+
+
+app.layout = dbc.Container([row])
 
 
 @app.callback(
